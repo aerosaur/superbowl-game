@@ -8,7 +8,7 @@ export type Category = {
   id: string
   name: string
   icon: string
-  type: 'outcome' | 'player' | 'fun'
+  type: 'outcome' | 'player' | 'fun' | 'halftime' | 'ads'
   options: Option[]
 }
 
@@ -142,6 +142,78 @@ export const categories: Category[] = [
     ]
   },
 
+  // ===== HALFTIME SHOW (3) =====
+  {
+    id: 'halftime-length',
+    name: 'Halftime Show Length',
+    icon: 'Hourglass',
+    type: 'halftime',
+    options: [
+      { id: 'under-13', label: 'Under 13 minutes', sublabel: 'Quick set' },
+      { id: '13-14', label: '13-14 minutes', sublabel: 'Standard' },
+      { id: '15-plus', label: '15+ minutes', sublabel: 'Extended performance' },
+    ]
+  },
+  {
+    id: 'halftime-guests',
+    name: 'Guest Performers',
+    icon: 'UsersThree',
+    type: 'halftime',
+    options: [
+      { id: '0', label: '0 guests', sublabel: 'Solo show' },
+      { id: '1', label: '1 guest' },
+      { id: '2-plus', label: '2+ guests', sublabel: 'Star-studded' },
+    ]
+  },
+  {
+    id: 'halftime-first-song',
+    name: 'First Song',
+    icon: 'MusicNotes',
+    type: 'halftime',
+    options: [
+      { id: 'baile-inolvidable', label: 'BAILE INOLVIDABLE' },
+      { id: 'la-mudanza', label: 'La MUDANZA' },
+      { id: 'titi-me-pregunto', label: 'Tití Me Preguntó' },
+      { id: 'monaco', label: 'MONACO' },
+      { id: 'other', label: 'Other' },
+    ]
+  },
+
+  // ===== SUPER BOWL ADS (3) =====
+  {
+    id: 'ads-dogs',
+    name: 'Ads Featuring Dogs',
+    icon: 'Dog',
+    type: 'ads',
+    options: [
+      { id: '0-1', label: '0-1 ads' },
+      { id: '2-3', label: '2-3 ads' },
+      { id: '4-plus', label: '4+ ads', sublabel: 'Puppy Bowl vibes' },
+    ]
+  },
+  {
+    id: 'ads-trailers',
+    name: 'Movie Trailers Shown',
+    icon: 'FilmSlate',
+    type: 'ads',
+    options: [
+      { id: '0-2', label: '0-2 trailers' },
+      { id: '3-4', label: '3-4 trailers' },
+      { id: '5-plus', label: '5+ trailers', sublabel: 'Hollywood takeover' },
+    ]
+  },
+  {
+    id: 'ads-ai',
+    name: 'Ads Mentioning AI',
+    icon: 'Robot',
+    type: 'ads',
+    options: [
+      { id: '0-1', label: '0-1 ads' },
+      { id: '2-3', label: '2-3 ads' },
+      { id: '4-plus', label: '4+ ads', sublabel: 'AI overload' },
+    ]
+  },
+
   // ===== FUN PROPS (5) =====
   {
     id: 'coin-toss',
@@ -211,6 +283,16 @@ export const categoryGroups = {
     title: 'Player Props',
     subtitle: 'Who will shine brightest?',
     categories: categories.filter(c => c.type === 'player')
+  },
+  halftime: {
+    title: 'Halftime Show',
+    subtitle: 'Bad Bunny takes the stage',
+    categories: categories.filter(c => c.type === 'halftime')
+  },
+  ads: {
+    title: 'Super Bowl Ads',
+    subtitle: 'The commercials we came for',
+    categories: categories.filter(c => c.type === 'ads')
   },
   fun: {
     title: 'Fun Props',

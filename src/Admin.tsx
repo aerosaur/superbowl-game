@@ -18,7 +18,13 @@ import {
   ListNumbers,
   ArrowsClockwise,
   ChartLine,
-  StarFour
+  StarFour,
+  Hourglass,
+  UsersThree,
+  MusicNotes,
+  Dog,
+  FilmSlate,
+  Robot
 } from '@phosphor-icons/react'
 import './App.css'
 
@@ -41,6 +47,12 @@ const iconMap: Record<string, React.ElementType> = {
   Drop,
   ListNumbers,
   ArrowsClockwise,
+  Hourglass,
+  UsersThree,
+  MusicNotes,
+  Dog,
+  FilmSlate,
+  Robot,
 }
 
 function Admin() {
