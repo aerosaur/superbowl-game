@@ -249,3 +249,34 @@ export function getCurrentUserFirstName(user: { email?: string; user_metadata?: 
     user.email
   )
 }
+
+export async function updateDisplayName(newName: string): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { error } = await supabase
+    .from('sb_profiles')
+    .upsert({
+      user_id: user.id,
+      first_name: newName.trim(),
+      updated_at: new Date().toISOString()
+    }, {
+      onConflict: 'user_id'
+    })
+
+  if (error) throw error
+}
+
+export async function getMyProfile(): Promise<string | null> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+
+  const { data, error } = await supabase
+    .from('sb_profiles')
+    .select('first_name')
+    .eq('user_id', user.id)
+    .single()
+
+  if (error || !data) return null
+  return data.first_name
+}

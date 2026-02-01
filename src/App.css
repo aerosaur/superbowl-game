@@ -629,6 +629,90 @@
   gap: 4px;
 }
 
+.score-hero-name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: 4px;
+}
+
+.display-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.edit-name-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.edit-name-btn:hover {
+  color: var(--text);
+  background: var(--bg-card);
+}
+
+.edit-name-form {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.edit-name-input {
+  padding: 6px 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 0.9375rem;
+  width: 140px;
+}
+
+.edit-name-input:focus {
+  border-color: var(--seahawks-green);
+  outline: none;
+}
+
+.edit-name-save,
+.edit-name-cancel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.edit-name-save {
+  background: var(--seahawks-green);
+  color: white;
+}
+
+.edit-name-save:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.edit-name-save:disabled {
+  opacity: 0.5;
+}
+
+.edit-name-cancel {
+  background: var(--bg-card);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.edit-name-cancel:hover {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+
 .score-hero-label {
   font-size: 0.75rem;
   color: var(--text-muted);

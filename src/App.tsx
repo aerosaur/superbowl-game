@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase, savePrediction, deletePrediction, getPredictions, getResults, subscribeToResults, getLeaderboard, saveProfile, getCurrentUserFirstName, type LeaderboardEntry } from './lib/supabase'
+import { supabase, savePrediction, deletePrediction, getPredictions, getResults, subscribeToResults, getLeaderboard, saveProfile, getCurrentUserFirstName, updateDisplayName, getMyProfile, type LeaderboardEntry } from './lib/supabase'
 import { categories, categoryGroups, type Category, type Option } from './data/categories'
 import type { User } from '@supabase/supabase-js'
 import {
@@ -30,7 +30,8 @@ import {
   FilmSlate,
   Robot,
   ChartLine,
-  CloudCheck
+  CloudCheck,
+  PencilSimple
 } from '@phosphor-icons/react'
 import './App.css'
 
@@ -73,24 +74,37 @@ function App() {
   const [showLeaderboard, setShowLeaderboard] = useState(false)
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
   const [currentUserFirstName, setCurrentUserFirstName] = useState<string>('You')
+  const [isEditingName, setIsEditingName] = useState(false)
+  const [editNameValue, setEditNameValue] = useState('')
+  const [savingName, setSavingName] = useState(false)
 
   // Auth state
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setUser(session?.user ?? null)
       if (session?.user) {
-        setCurrentUserFirstName(getCurrentUserFirstName(session.user))
-        // Save profile on login
-        saveProfile()
+        // Try to get saved profile name first, fallback to Google name
+        const savedName = await getMyProfile()
+        if (savedName) {
+          setCurrentUserFirstName(savedName)
+        } else {
+          setCurrentUserFirstName(getCurrentUserFirstName(session.user))
+          saveProfile()
+        }
       }
       setLoading(false)
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null)
       if (session?.user) {
-        setCurrentUserFirstName(getCurrentUserFirstName(session.user))
-        saveProfile()
+        const savedName = await getMyProfile()
+        if (savedName) {
+          setCurrentUserFirstName(savedName)
+        } else {
+          setCurrentUserFirstName(getCurrentUserFirstName(session.user))
+          saveProfile()
+        }
       }
     })
 
@@ -221,6 +235,30 @@ function App() {
   // Find current user's rank
   const currentUserRank = leaderboard.findIndex(e => e.user_id === user?.id) + 1
 
+  const handleEditName = () => {
+    setEditNameValue(currentUserFirstName)
+    setIsEditingName(true)
+  }
+
+  const handleSaveName = async () => {
+    if (!editNameValue.trim()) return
+    setSavingName(true)
+    try {
+      await updateDisplayName(editNameValue.trim())
+      setCurrentUserFirstName(editNameValue.trim())
+      setIsEditingName(false)
+    } catch (error) {
+      console.error('Failed to update name:', error)
+    } finally {
+      setSavingName(false)
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setIsEditingName(false)
+    setEditNameValue('')
+  }
+
   if (loading) {
     return (
       <div className="app">
@@ -298,7 +336,37 @@ function App() {
       {/* Score Hero Section */}
       <div className="score-hero">
         <div className="score-hero-left">
-          <span className="score-hero-label">Your Score</span>
+          <div className="score-hero-name">
+            {isEditingName ? (
+              <div className="edit-name-form">
+                <input
+                  type="text"
+                  value={editNameValue}
+                  onChange={(e) => setEditNameValue(e.target.value)}
+                  placeholder="Your name"
+                  className="edit-name-input"
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleSaveName()
+                    if (e.key === 'Escape') handleCancelEdit()
+                  }}
+                />
+                <button className="edit-name-save" onClick={handleSaveName} disabled={savingName}>
+                  {savingName ? '...' : <Check size={14} weight="bold" />}
+                </button>
+                <button className="edit-name-cancel" onClick={handleCancelEdit}>
+                  <X size={14} weight="bold" />
+                </button>
+              </div>
+            ) : (
+              <>
+                <span className="display-name">{currentUserFirstName}</span>
+                <button className="edit-name-btn" onClick={handleEditName} title="Edit display name">
+                  <PencilSimple size={14} />
+                </button>
+              </>
+            )}
+          </div>
           <div className="score-hero-value">
             <span className="score-big">{score}</span>
             <span className="score-total">/ {totalResults > 0 ? totalResults : categories.length}</span>
