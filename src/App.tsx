@@ -80,22 +80,25 @@ function App() {
 
   // Auth state
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    const loadUserProfile = async (user: User) => {
+      try {
+        const savedName = await getMyProfile(user.id)
+        if (savedName) {
+          setCurrentUserFirstName(savedName)
+        } else {
+          setCurrentUserFirstName(getCurrentUserFirstName(user))
+          saveProfile().catch(console.error)
+        }
+      } catch (error) {
+        console.error('Failed to load profile:', error)
+        setCurrentUserFirstName(getCurrentUserFirstName(user))
+      }
+    }
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
       if (session?.user) {
-        // Try to get saved profile name first, fallback to Google name
-        try {
-          const savedName = await getMyProfile()
-          if (savedName) {
-            setCurrentUserFirstName(savedName)
-          } else {
-            setCurrentUserFirstName(getCurrentUserFirstName(session.user))
-            saveProfile().catch(console.error)
-          }
-        } catch (error) {
-          console.error('Failed to load profile:', error)
-          setCurrentUserFirstName(getCurrentUserFirstName(session.user))
-        }
+        loadUserProfile(session.user)
       }
       setLoading(false)
     }).catch((error) => {
@@ -103,21 +106,10 @@ function App() {
       setLoading(false)
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
       if (session?.user) {
-        try {
-          const savedName = await getMyProfile()
-          if (savedName) {
-            setCurrentUserFirstName(savedName)
-          } else {
-            setCurrentUserFirstName(getCurrentUserFirstName(session.user))
-            saveProfile().catch(console.error)
-          }
-        } catch (error) {
-          console.error('Failed to load profile:', error)
-          setCurrentUserFirstName(getCurrentUserFirstName(session.user))
-        }
+        loadUserProfile(session.user)
       }
     })
 

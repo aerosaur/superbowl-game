@@ -267,15 +267,19 @@ export async function updateDisplayName(newName: string): Promise<void> {
   if (error) throw error
 }
 
-export async function getMyProfile(): Promise<string | null> {
+export async function getMyProfile(userId?: string): Promise<string | null> {
   try {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return null
+    let uid = userId
+    if (!uid) {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return null
+      uid = user.id
+    }
 
     const { data, error } = await supabase
       .from('sb_profiles')
       .select('first_name')
-      .eq('user_id', user.id)
+      .eq('user_id', uid)
       .maybeSingle()
 
     if (error || !data) return null
