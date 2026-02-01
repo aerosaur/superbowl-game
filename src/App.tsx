@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase, savePrediction, getPredictions, getResults, subscribeToResults } from './lib/supabase'
+import { supabase, savePrediction, deletePrediction, getPredictions, getResults, subscribeToResults, getLeaderboard } from './lib/supabase'
 import { categories, categoryGroups, type Category, type Option } from './data/categories'
 import type { User } from '@supabase/supabase-js'
 import {
@@ -28,7 +28,9 @@ import {
   MusicNotes,
   Dog,
   FilmSlate,
-  Robot
+  Robot,
+  ChartLine,
+  CloudCheck
 } from '@phosphor-icons/react'
 import './App.css'
 
@@ -60,6 +62,13 @@ const iconMap: Record<string, React.ElementType> = {
 // Feb 8, 2026 at 6:30pm ET = Feb 8, 2026 23:30 UTC
 const LOCKOUT_TIME = new Date('2026-02-08T23:30:00Z')
 
+type LeaderboardEntry = {
+  odbc: string
+  odbc_short: string
+  score: number
+  total: number
+}
+
 function App() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
@@ -68,16 +77,21 @@ function App() {
   const [saving, setSaving] = useState<string | null>(null)
   const [timeLeft, setTimeLeft] = useState<string>('')
   const [isLocked, setIsLocked] = useState(false)
+  const [showLeaderboard, setShowLeaderboard] = useState(false)
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
   // Auth state
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
+      setCurrentUserId(session?.user?.id ?? null)
       setLoading(false)
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
+      setCurrentUserId(session?.user?.id ?? null)
     })
 
     return () => subscription.unsubscribe()
@@ -112,6 +126,13 @@ function App() {
 
     return () => unsubscribe()
   }, [])
+
+  // Load leaderboard when results change or when opened
+  useEffect(() => {
+    if (showLeaderboard && user) {
+      getLeaderboard(results).then(setLeaderboard).catch(console.error)
+    }
+  }, [showLeaderboard, results, user])
 
   // Countdown timer
   useEffect(() => {
@@ -160,16 +181,29 @@ function App() {
   const handleSelect = useCallback(async (categoryId: string, optionId: string) => {
     if (isLocked || !user) return
 
+    const currentSelection = predictions.get(categoryId)
     setSaving(categoryId)
+
     try {
-      await savePrediction(categoryId, optionId)
-      setPredictions(prev => new Map(prev).set(categoryId, optionId))
+      if (currentSelection === optionId) {
+        // Toggle off - delete prediction
+        await deletePrediction(categoryId)
+        setPredictions(prev => {
+          const newMap = new Map(prev)
+          newMap.delete(categoryId)
+          return newMap
+        })
+      } else {
+        // Select new option
+        await savePrediction(categoryId, optionId)
+        setPredictions(prev => new Map(prev).set(categoryId, optionId))
+      }
     } catch (error) {
       console.error('Failed to save prediction:', error)
     } finally {
       setSaving(null)
     }
-  }, [isLocked, user])
+  }, [isLocked, user, predictions])
 
   // Calculate score
   const score = categories.reduce((acc, cat) => {
@@ -244,6 +278,13 @@ function App() {
             {isLocked ? <Lock size={14} /> : <Clock size={14} />}
             {timeLeft}
           </div>
+          <button
+            className={`leaderboard-toggle ${showLeaderboard ? 'active' : ''}`}
+            onClick={() => setShowLeaderboard(!showLeaderboard)}
+          >
+            <ChartLine size={16} />
+            <span className="leaderboard-toggle-text">Leaderboard</span>
+          </button>
           <div className="user-menu">
             <span className="user-email">{user.email}</span>
             <button className="sign-out-btn" onClick={handleSignOut}>Sign out</button>
@@ -262,7 +303,46 @@ function App() {
             <span className="score-value">{score}/{totalResults}</span>
           </div>
         )}
+        <div className="score-item saved-indicator">
+          <CloudCheck size={16} />
+          <span>Auto-saved</span>
+        </div>
       </div>
+
+      {showLeaderboard && (
+        <div className="leaderboard-panel">
+          <h2>Leaderboard</h2>
+          {leaderboard.length === 0 ? (
+            <p className="empty-state">No predictions yet</p>
+          ) : (
+            <table className="leaderboard-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Player</th>
+                  <th>Score</th>
+                  <th>Picks</th>
+                </tr>
+              </thead>
+              <tbody>
+                {leaderboard.map((player, index) => (
+                  <tr
+                    key={player.odbc}
+                    className={`${index < 3 ? `rank-${index + 1}` : ''} ${player.odbc === currentUserId ? 'is-you' : ''}`}
+                  >
+                    <td className="rank">{index + 1}</td>
+                    <td className="player-id">
+                      {player.odbc === currentUserId ? 'You' : `Player ${player.odbc_short}`}
+                    </td>
+                    <td className="score">{player.score}{totalResults > 0 ? `/${totalResults}` : ''}</td>
+                    <td className="total">{player.total}/{categories.length}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
 
       <main className="main">
         {Object.entries(categoryGroups).map(([key, group]) => (

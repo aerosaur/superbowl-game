@@ -56,6 +56,19 @@ export async function getPredictions(): Promise<Prediction[]> {
   return data || []
 }
 
+export async function deletePrediction(category: string) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { error } = await supabase
+    .from('sb_predictions')
+    .delete()
+    .eq('user_id', user.id)
+    .eq('category', category)
+
+  if (error) throw error
+}
+
 export async function getResults(): Promise<Result[]> {
   const { data, error } = await supabase
     .from('sb_results')
@@ -109,26 +122,56 @@ export function subscribeToResults(callback: (results: Result[]) => void) {
 export async function getAllPredictions(): Promise<{ user_email: string; predictions: Prediction[] }[]> {
   const { data, error } = await supabase
     .from('sb_predictions')
-    .select('*, user:user_id(email)')
+    .select('*')
     .order('user_id')
 
   if (error) throw error
 
-  // Group by user
-  const grouped = new Map<string, { email: string; predictions: Prediction[] }>()
+  // Group by user - use user_id as identifier since we can't get emails easily
+  const grouped = new Map<string, { odbc: string; predictions: Prediction[] }>()
 
   for (const row of data || []) {
-    const userId = row.user_id
-    const email = (row as { user: { email: string } | null }).user?.email || 'Unknown'
+    const odbc = row.user_id
 
-    if (!grouped.has(userId)) {
-      grouped.set(userId, { email, predictions: [] })
+    if (!grouped.has(odbc)) {
+      grouped.set(odbc, { odbc, predictions: [] })
     }
-    grouped.get(userId)!.predictions.push(row)
+    grouped.get(odbc)!.predictions.push(row)
   }
 
   return Array.from(grouped.values()).map(g => ({
-    user_email: g.email,
+    user_email: g.odbc.slice(0, 8) + '...', // Use truncated user_id as identifier
     predictions: g.predictions
   }))
+}
+
+export async function getLeaderboard(resultsMap: Map<string, string>): Promise<{ odbc: string; odbc_short: string; score: number; total: number }[]> {
+  const { data, error } = await supabase
+    .from('sb_predictions')
+    .select('user_id, category, selection')
+    .order('user_id')
+
+  if (error) throw error
+  if (!data) return []
+
+  // Group by user and calculate scores
+  const scores = new Map<string, { odbc: string; score: number; total: number }>()
+
+  for (const row of data) {
+    const odbc = row.user_id
+    if (!scores.has(odbc)) {
+      scores.set(odbc, { odbc, score: 0, total: 0 })
+    }
+    const userScore = scores.get(odbc)!
+    userScore.total++
+
+    const result = resultsMap.get(row.category)
+    if (result && row.selection === result) {
+      userScore.score++
+    }
+  }
+
+  return Array.from(scores.values())
+    .map(s => ({ ...s, odbc_short: s.odbc.slice(0, 8) }))
+    .sort((a, b) => b.score - a.score || b.total - a.total)
 }
