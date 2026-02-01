@@ -1,0 +1,81 @@
+:root {
+  /* Colors - NFL-inspired with modern twist */
+  --bg: #0a0a0b;
+  --bg-elevated: #141416;
+  --bg-card: #1a1a1d;
+  --border: #2a2a2e;
+  --border-subtle: #222225;
+
+  --text: #fafafa;
+  --text-secondary: #888;
+  --text-muted: #555;
+
+  --accent: #00d084;
+  --accent-dim: rgba(0, 208, 132, 0.15);
+
+  /* Team colors */
+  --seahawks: #002244;
+  --seahawks-accent: #69be28;
+  --patriots: #002244;
+  --patriots-accent: #c60c30;
+
+  /* Status */
+  --correct: #00d084;
+  --incorrect: #ff4757;
+  --warning: #ffa502;
+
+  /* Typography */
+  --font-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Space Mono', 'SF Mono', monospace;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input {
+  font-family: inherit;
+  border: none;
+  background: none;
+  outline: none;
+}
