@@ -84,26 +84,39 @@ function App() {
       setUser(session?.user ?? null)
       if (session?.user) {
         // Try to get saved profile name first, fallback to Google name
-        const savedName = await getMyProfile()
-        if (savedName) {
-          setCurrentUserFirstName(savedName)
-        } else {
+        try {
+          const savedName = await getMyProfile()
+          if (savedName) {
+            setCurrentUserFirstName(savedName)
+          } else {
+            setCurrentUserFirstName(getCurrentUserFirstName(session.user))
+            saveProfile().catch(console.error)
+          }
+        } catch (error) {
+          console.error('Failed to load profile:', error)
           setCurrentUserFirstName(getCurrentUserFirstName(session.user))
-          saveProfile()
         }
       }
+      setLoading(false)
+    }).catch((error) => {
+      console.error('Failed to get session:', error)
       setLoading(false)
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null)
       if (session?.user) {
-        const savedName = await getMyProfile()
-        if (savedName) {
-          setCurrentUserFirstName(savedName)
-        } else {
+        try {
+          const savedName = await getMyProfile()
+          if (savedName) {
+            setCurrentUserFirstName(savedName)
+          } else {
+            setCurrentUserFirstName(getCurrentUserFirstName(session.user))
+            saveProfile().catch(console.error)
+          }
+        } catch (error) {
+          console.error('Failed to load profile:', error)
           setCurrentUserFirstName(getCurrentUserFirstName(session.user))
-          saveProfile()
         }
       }
     })
