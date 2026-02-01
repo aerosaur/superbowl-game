@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase, savePrediction, deletePrediction, getPredictions, getResults, subscribeToResults, getLeaderboard } from './lib/supabase'
+import { supabase, savePrediction, deletePrediction, getPredictions, getResults, subscribeToResults, getLeaderboard, saveProfile, getCurrentUserFirstName, type LeaderboardEntry } from './lib/supabase'
 import { categories, categoryGroups, type Category, type Option } from './data/categories'
 import type { User } from '@supabase/supabase-js'
 import {
@@ -62,13 +62,6 @@ const iconMap: Record<string, React.ElementType> = {
 // Feb 8, 2026 at 6:30pm ET = Feb 8, 2026 23:30 UTC
 const LOCKOUT_TIME = new Date('2026-02-08T23:30:00Z')
 
-type LeaderboardEntry = {
-  odbc: string
-  odbc_short: string
-  score: number
-  total: number
-}
-
 function App() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
@@ -79,19 +72,26 @@ function App() {
   const [isLocked, setIsLocked] = useState(false)
   const [showLeaderboard, setShowLeaderboard] = useState(false)
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+  const [currentUserFirstName, setCurrentUserFirstName] = useState<string>('You')
 
   // Auth state
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
-      setCurrentUserId(session?.user?.id ?? null)
+      if (session?.user) {
+        setCurrentUserFirstName(getCurrentUserFirstName(session.user))
+        // Save profile on login
+        saveProfile()
+      }
       setLoading(false)
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
-      setCurrentUserId(session?.user?.id ?? null)
+      if (session?.user) {
+        setCurrentUserFirstName(getCurrentUserFirstName(session.user))
+        saveProfile()
+      }
     })
 
     return () => subscription.unsubscribe()
@@ -218,6 +218,9 @@ function App() {
   const totalPredictions = predictions.size
   const totalResults = results.size
 
+  // Find current user's rank
+  const currentUserRank = leaderboard.findIndex(e => e.user_id === user?.id) + 1
+
   if (loading) {
     return (
       <div className="app">
@@ -292,20 +295,31 @@ function App() {
         </div>
       </header>
 
-      <div className="score-bar">
-        <div className="score-item">
-          <span className="score-label">Predictions</span>
-          <span className="score-value">{totalPredictions}/{categories.length}</span>
-        </div>
-        {totalResults > 0 && (
-          <div className="score-item highlight">
-            <span className="score-label">Score</span>
-            <span className="score-value">{score}/{totalResults}</span>
+      {/* Score Hero Section */}
+      <div className="score-hero">
+        <div className="score-hero-left">
+          <span className="score-hero-label">Your Score</span>
+          <div className="score-hero-value">
+            <span className="score-big">{score}</span>
+            <span className="score-total">/ {totalResults > 0 ? totalResults : categories.length}</span>
           </div>
-        )}
-        <div className="score-item saved-indicator">
-          <CloudCheck size={16} />
-          <span>Auto-saved</span>
+          {totalResults > 0 && currentUserRank > 0 && (
+            <span className="score-rank">Rank #{currentUserRank} of {leaderboard.length}</span>
+          )}
+        </div>
+        <div className="score-hero-right">
+          <div className="score-stat">
+            <span className="score-stat-value">{totalPredictions}</span>
+            <span className="score-stat-label">Picks Made</span>
+          </div>
+          <div className="score-stat">
+            <span className="score-stat-value">{categories.length - totalPredictions}</span>
+            <span className="score-stat-label">Remaining</span>
+          </div>
+          <div className="saved-indicator">
+            <CloudCheck size={16} />
+            <span>Auto-saved</span>
+          </div>
         </div>
       </div>
 
@@ -327,12 +341,12 @@ function App() {
               <tbody>
                 {leaderboard.map((player, index) => (
                   <tr
-                    key={player.odbc}
-                    className={`${index < 3 ? `rank-${index + 1}` : ''} ${player.odbc === currentUserId ? 'is-you' : ''}`}
+                    key={player.user_id}
+                    className={`${index < 3 ? `rank-${index + 1}` : ''} ${player.user_id === user?.id ? 'is-you' : ''}`}
                   >
                     <td className="rank">{index + 1}</td>
-                    <td className="player-id">
-                      {player.odbc === currentUserId ? 'You' : `Player ${player.odbc_short}`}
+                    <td className="player-name">
+                      {player.user_id === user?.id ? `${currentUserFirstName} (You)` : player.first_name}
                     </td>
                     <td className="score">{player.score}{totalResults > 0 ? `/${totalResults}` : ''}</td>
                     <td className="total">{player.total}/{categories.length}</td>
