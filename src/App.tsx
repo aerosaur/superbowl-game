@@ -2,7 +2,48 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase, savePrediction, getPredictions, getResults, subscribeToResults } from './lib/supabase'
 import { categories, categoryGroups, type Category, type Option } from './data/categories'
 import type { User } from '@supabase/supabase-js'
+import {
+  Trophy,
+  ChartBar,
+  Target,
+  Timer,
+  NumberCircleOne,
+  Star,
+  PersonSimpleRun,
+  Football,
+  SneakerMove,
+  HandGrabbing,
+  CurrencyCircleDollar,
+  Microphone,
+  Drop,
+  ListNumbers,
+  ArrowsClockwise,
+  Clock,
+  Lock,
+  Check,
+  X,
+  StarFour
+} from '@phosphor-icons/react'
 import './App.css'
+
+// Icon mapping
+const iconMap: Record<string, React.ElementType> = {
+  Trophy,
+  ChartBar,
+  Target,
+  Timer,
+  NumberCircleOne,
+  Star,
+  PersonSimpleRun,
+  Football,
+  SneakerMove,
+  HandGrabbing,
+  CurrencyCircleDollar,
+  Microphone,
+  Drop,
+  ListNumbers,
+  ArrowsClockwise,
+}
 
 // Feb 8, 2026 at 6:30pm ET = Feb 8, 2026 23:30 UTC
 const LOCKOUT_TIME = new Date('2026-02-08T23:30:00Z')
@@ -68,7 +109,7 @@ function App() {
 
       if (diff <= 0) {
         setIsLocked(true)
-        setTimeLeft('Predictions locked')
+        setTimeLeft('Locked')
         return
       }
 
@@ -152,14 +193,16 @@ function App() {
               <div className="yard-line"></div>
               <div className="center-circle"></div>
             </div>
-            <div className="football">🏈</div>
+            <div className="football">
+              <Football size={48} weight="fill" />
+            </div>
           </div>
           <h1>Super Bowl LX</h1>
           <p className="matchup">Seahawks vs Patriots</p>
           <p className="date">Sunday, Feb 8 · 6:30 PM ET</p>
           <p className="venue">Levi's Stadium, Santa Clara</p>
           <button className="sign-in-btn" onClick={handleSignIn}>
-            <svg viewBox="0 0 24 24" width="20" height="20">
+            <svg viewBox="0 0 24 24" width="18" height="18">
               <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
               <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
@@ -176,7 +219,9 @@ function App() {
     <div className="app">
       <header className="header">
         <div className="header-left">
-          <span className="logo">🏈</span>
+          <span className="logo">
+            <Football size={24} weight="fill" />
+          </span>
           <div className="header-title">
             <h1>Super Bowl LX</h1>
             <span className="matchup-small">SEA vs NE · Feb 8</span>
@@ -184,7 +229,8 @@ function App() {
         </div>
         <div className="header-right">
           <div className="timer" data-locked={isLocked}>
-            {isLocked ? '🔒' : '⏱️'} {timeLeft}
+            {isLocked ? <Lock size={14} /> : <Clock size={14} />}
+            {timeLeft}
           </div>
           <div className="user-menu">
             <span className="user-email">{user.email}</span>
@@ -231,7 +277,7 @@ function App() {
       </main>
 
       <footer className="footer">
-        <p>Made with 🏈 for Super Bowl LX</p>
+        <p>Super Bowl LX Predictions</p>
       </footer>
     </div>
   )
@@ -254,16 +300,19 @@ function CategoryCard({
 }) {
   const hasResult = !!result
   const isCorrect = hasResult && selectedOption === result
+  const IconComponent = iconMap[category.icon]
 
   return (
     <div className={`category-card ${hasResult ? 'has-result' : ''} ${isCorrect ? 'correct' : hasResult && selectedOption ? 'incorrect' : ''}`}>
       <div className="category-header">
-        <span className="category-emoji">{category.emoji}</span>
+        <span className="category-icon">
+          {IconComponent && <IconComponent size={18} />}
+        </span>
         <span className="category-name">{category.name}</span>
         {isSaving && <span className="saving-indicator">Saving...</span>}
         {hasResult && (
           <span className={`result-badge ${isCorrect ? 'correct' : 'incorrect'}`}>
-            {isCorrect ? '✓' : '✗'}
+            {isCorrect ? <Check size={12} weight="bold" /> : <X size={12} weight="bold" />}
           </span>
         )}
       </div>
@@ -307,8 +356,8 @@ function OptionButton({
     >
       <span className="option-label">{option.label}</span>
       {option.sublabel && <span className="option-sublabel">{option.sublabel}</span>}
-      {isSelected && <span className="check">✓</span>}
-      {isResult && !isSelected && <span className="result-marker">★</span>}
+      {isSelected && <span className="check"><Check size={12} weight="bold" /></span>}
+      {isResult && !isSelected && <span className="result-marker"><StarFour size={14} weight="fill" /></span>}
     </button>
   )
 }

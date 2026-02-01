@@ -1,9 +1,47 @@
 import { useState, useEffect } from 'react'
 import { getResults, saveResult, deleteResult, getAllPredictions } from './lib/supabase'
 import { categories, categoryGroups } from './data/categories'
+import {
+  Trophy,
+  ChartBar,
+  Target,
+  Timer,
+  NumberCircleOne,
+  Star,
+  PersonSimpleRun,
+  Football,
+  SneakerMove,
+  HandGrabbing,
+  CurrencyCircleDollar,
+  Microphone,
+  Drop,
+  ListNumbers,
+  ArrowsClockwise,
+  ChartLine,
+  StarFour
+} from '@phosphor-icons/react'
 import './App.css'
 
 const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'superbowl60'
+
+// Icon mapping
+const iconMap: Record<string, React.ElementType> = {
+  Trophy,
+  ChartBar,
+  Target,
+  Timer,
+  NumberCircleOne,
+  Star,
+  PersonSimpleRun,
+  Football,
+  SneakerMove,
+  HandGrabbing,
+  CurrencyCircleDollar,
+  Microphone,
+  Drop,
+  ListNumbers,
+  ArrowsClockwise,
+}
 
 function Admin() {
   const [authenticated, setAuthenticated] = useState(false)
@@ -86,8 +124,9 @@ function Admin() {
     return (
       <div className="app">
         <div className="login-screen admin-login">
-          <h1>🏈 Admin Panel</h1>
-          <p>Super Bowl LX Results Entry</p>
+          <Football size={48} weight="fill" style={{ color: 'var(--text-muted)' }} />
+          <h1>Admin Panel</h1>
+          <p className="date">Super Bowl LX Results Entry</p>
           <form onSubmit={handleAuth}>
             <input
               type="password"
@@ -111,7 +150,9 @@ function Admin() {
     <div className="app admin-app">
       <header className="header">
         <div className="header-left">
-          <span className="logo">🏈</span>
+          <span className="logo">
+            <Football size={24} weight="fill" />
+          </span>
           <div className="header-title">
             <h1>Admin Panel</h1>
             <span className="matchup-small">Super Bowl LX Results</span>
@@ -122,7 +163,8 @@ function Admin() {
             className={`leaderboard-toggle ${showLeaderboard ? 'active' : ''}`}
             onClick={() => setShowLeaderboard(!showLeaderboard)}
           >
-            📊 Leaderboard
+            <ChartLine size={16} style={{ marginRight: '6px' }} />
+            Leaderboard
           </button>
         </div>
       </header>
@@ -140,7 +182,7 @@ function Admin() {
 
       {showLeaderboard && (
         <div className="leaderboard-panel">
-          <h2>🏆 Leaderboard</h2>
+          <h2>Leaderboard</h2>
           {leaderboard.length === 0 ? (
             <p className="empty-state">No predictions yet</p>
           ) : (
@@ -157,7 +199,7 @@ function Admin() {
                 {leaderboard.map((player, index) => (
                   <tr key={player.email} className={index < 3 ? `rank-${index + 1}` : ''}>
                     <td className="rank">
-                      {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
+                      {index + 1}
                     </td>
                     <td className="email">{player.email}</td>
                     <td className="score">{player.score}/{totalResults}</td>
@@ -181,11 +223,14 @@ function Admin() {
               {group.categories.map(category => {
                 const currentResult = results.get(category.id)
                 const isSaving = saving === category.id
+                const IconComponent = iconMap[category.icon]
 
                 return (
                   <div key={category.id} className={`category-card admin-card ${currentResult ? 'has-result' : ''}`}>
                     <div className="category-header">
-                      <span className="category-emoji">{category.emoji}</span>
+                      <span className="category-icon">
+                        {IconComponent && <IconComponent size={18} />}
+                      </span>
                       <span className="category-name">{category.name}</span>
                       {isSaving && <span className="saving-indicator">Saving...</span>}
                       {currentResult && (
@@ -208,7 +253,7 @@ function Admin() {
                         >
                           <span className="option-label">{option.label}</span>
                           {option.sublabel && <span className="option-sublabel">{option.sublabel}</span>}
-                          {currentResult === option.id && <span className="check">★</span>}
+                          {currentResult === option.id && <span className="check"><StarFour size={14} weight="fill" /></span>}
                         </button>
                       ))}
                     </div>

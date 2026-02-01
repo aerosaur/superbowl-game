@@ -7,7 +7,7 @@ export type Option = {
 export type Category = {
   id: string
   name: string
-  emoji: string
+  icon: string
   type: 'outcome' | 'player' | 'fun'
   options: Option[]
 }
@@ -17,7 +17,7 @@ export const categories: Category[] = [
   {
     id: 'winner',
     name: 'Super Bowl Winner',
-    emoji: '🏆',
+    icon: 'Trophy',
     type: 'outcome',
     options: [
       { id: 'seahawks', label: 'Seattle Seahawks', sublabel: 'NFC Champions' },
@@ -27,7 +27,7 @@ export const categories: Category[] = [
   {
     id: 'margin',
     name: 'Winning Margin',
-    emoji: '📊',
+    icon: 'ChartBar',
     type: 'outcome',
     options: [
       { id: '1-3', label: '1-3 points', sublabel: 'Nail-biter' },
@@ -40,7 +40,7 @@ export const categories: Category[] = [
   {
     id: 'total-points',
     name: 'Total Points',
-    emoji: '🎯',
+    icon: 'Target',
     type: 'outcome',
     options: [
       { id: 'under', label: 'Under 44.5', sublabel: 'Defense wins' },
@@ -50,7 +50,7 @@ export const categories: Category[] = [
   {
     id: 'first-half',
     name: 'First Half Winner',
-    emoji: '⏱️',
+    icon: 'Timer',
     type: 'outcome',
     options: [
       { id: 'seahawks', label: 'Seattle Seahawks' },
@@ -61,7 +61,7 @@ export const categories: Category[] = [
   {
     id: 'first-to-score',
     name: 'First Team to Score',
-    emoji: '1️⃣',
+    icon: 'NumberCircleOne',
     type: 'outcome',
     options: [
       { id: 'seahawks', label: 'Seattle Seahawks' },
@@ -73,7 +73,7 @@ export const categories: Category[] = [
   {
     id: 'mvp',
     name: 'Super Bowl MVP',
-    emoji: '⭐',
+    icon: 'Star',
     type: 'player',
     options: [
       { id: 'geno-smith', label: 'Geno Smith', sublabel: 'SEA · QB' },
@@ -89,7 +89,7 @@ export const categories: Category[] = [
   {
     id: 'first-td',
     name: 'First TD Scorer',
-    emoji: '🏃',
+    icon: 'PersonSimpleRun',
     type: 'player',
     options: [
       { id: 'dk-metcalf', label: 'DK Metcalf', sublabel: 'SEA · WR' },
@@ -108,7 +108,7 @@ export const categories: Category[] = [
   {
     id: 'passing-yards',
     name: 'Most Passing Yards',
-    emoji: '🎾',
+    icon: 'Football',
     type: 'player',
     options: [
       { id: 'geno-smith', label: 'Geno Smith', sublabel: 'SEA · QB' },
@@ -118,7 +118,7 @@ export const categories: Category[] = [
   {
     id: 'rushing-yards',
     name: 'Most Rushing Yards',
-    emoji: '🦵',
+    icon: 'SneakerMove',
     type: 'player',
     options: [
       { id: 'kenneth-walker', label: 'Kenneth Walker III', sublabel: 'SEA · RB' },
@@ -130,7 +130,7 @@ export const categories: Category[] = [
   {
     id: 'receiving-yards',
     name: 'Most Receiving Yards',
-    emoji: '🙌',
+    icon: 'HandGrabbing',
     type: 'player',
     options: [
       { id: 'dk-metcalf', label: 'DK Metcalf', sublabel: 'SEA · WR' },
@@ -146,7 +146,7 @@ export const categories: Category[] = [
   {
     id: 'coin-toss',
     name: 'Coin Toss',
-    emoji: '🪙',
+    icon: 'CurrencyCircleDollar',
     type: 'fun',
     options: [
       { id: 'heads', label: 'Heads' },
@@ -156,7 +156,7 @@ export const categories: Category[] = [
   {
     id: 'anthem-length',
     name: 'National Anthem Length',
-    emoji: '🎤',
+    icon: 'Microphone',
     type: 'fun',
     options: [
       { id: 'under', label: 'Under 2:00', sublabel: 'Quick & efficient' },
@@ -166,7 +166,7 @@ export const categories: Category[] = [
   {
     id: 'gatorade',
     name: 'Gatorade Shower Color',
-    emoji: '🚿',
+    icon: 'Drop',
     type: 'fun',
     options: [
       { id: 'orange', label: 'Orange' },
@@ -180,7 +180,7 @@ export const categories: Category[] = [
   {
     id: 'first-score-type',
     name: 'First Scoring Play',
-    emoji: '📝',
+    icon: 'ListNumbers',
     type: 'fun',
     options: [
       { id: 'td-pass', label: 'Passing TD' },
@@ -192,7 +192,7 @@ export const categories: Category[] = [
   {
     id: 'q1-turnover',
     name: 'Turnover in Q1?',
-    emoji: '🔄',
+    icon: 'ArrowsClockwise',
     type: 'fun',
     options: [
       { id: 'yes', label: 'Yes', sublabel: 'Early chaos' },

@@ -1,32 +1,39 @@
 :root {
-  /* Colors - NFL-inspired with modern twist */
+  /* Background */
   --bg: #0a0a0b;
-  --bg-elevated: #141416;
-  --bg-card: #1a1a1d;
-  --border: #2a2a2e;
-  --border-subtle: #222225;
+  --bg-elevated: #111113;
+  --bg-card: #161618;
+  --border: #252528;
+  --border-subtle: #1e1e21;
 
-  --text: #fafafa;
-  --text-secondary: #888;
-  --text-muted: #555;
+  /* Text - light on dark */
+  --text: #f5f5f7;
+  --text-secondary: #a1a1a6;
+  --text-muted: #6e6e73;
 
-  --accent: #00d084;
-  --accent-dim: rgba(0, 208, 132, 0.15);
+  /* Accent */
+  --accent: #69BE28;
+  --accent-dim: rgba(105, 190, 40, 0.12);
 
-  /* Team colors */
-  --seahawks: #002244;
-  --seahawks-accent: #69be28;
-  --patriots: #002244;
-  --patriots-accent: #c60c30;
+  /* Seahawks */
+  --seahawks-navy: #002244;
+  --seahawks-green: #69BE28;
+  --seahawks-gray: #A5ACAF;
+
+  /* Patriots */
+  --patriots-navy: #002244;
+  --patriots-red: #C60C30;
+  --patriots-silver: #B0B7BC;
 
   /* Status */
-  --correct: #00d084;
-  --incorrect: #ff4757;
-  --warning: #ffa502;
+  --correct: #34C759;
+  --correct-dim: rgba(52, 199, 89, 0.12);
+  --incorrect: #FF3B30;
+  --incorrect-dim: rgba(255, 59, 48, 0.12);
 
   /* Typography */
-  --font-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'Space Mono', 'SF Mono', monospace;
+  --font-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'Space Mono', 'SF Mono', 'Consolas', monospace;
 
   /* Spacing */
   --space-xs: 4px;
@@ -39,11 +46,11 @@
   /* Radius */
   --radius-sm: 6px;
   --radius-md: 10px;
-  --radius-lg: 16px;
+  --radius-lg: 14px;
 
   /* Transitions */
-  --transition-fast: 0.15s ease;
-  --transition-normal: 0.25s ease;
+  --transition-fast: 0.12s ease;
+  --transition-normal: 0.2s ease;
 }
 
 * {
@@ -71,6 +78,7 @@ button {
   cursor: pointer;
   border: none;
   background: none;
+  color: inherit;
 }
 
 input {
@@ -78,4 +86,10 @@ input {
   border: none;
   background: none;
   outline: none;
+  color: inherit;
+}
+
+::selection {
+  background: var(--seahawks-green);
+  color: var(--bg);
 }
