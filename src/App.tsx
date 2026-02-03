@@ -109,8 +109,8 @@ function App() {
       try {
         const parties = await getMyParties()
         setMyParties(parties)
-        // Auto-select first party if user only has one
-        if (parties.length === 1) {
+        // Auto-select first party if user has any
+        if (parties.length > 0) {
           setCurrentParty(parties[0])
         }
       } catch (error) {
