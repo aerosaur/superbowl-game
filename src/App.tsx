@@ -375,9 +375,9 @@ function App() {
       <header className="header">
         <div className="header-left">
           <span className="logo">
-            <Football size={24} weight="fill" />
+            <Football size={20} weight="fill" />
           </span>
-          <h1>Super Bowl LX</h1>
+          <h1>Super Bowl LX <span className="header-teams">(SEA vs NE)</span></h1>
         </div>
         <div className="header-center">
           <div className="timer" data-locked={isLocked}>
@@ -394,26 +394,74 @@ function App() {
             <span className="leaderboard-toggle-text">Leaderboard</span>
           </button>
 
-          {/* Party Switcher */}
+          {/* Party Switcher (Desktop) */}
           <div className="party-switcher">
             <button
               className="party-switcher-btn"
               onClick={() => setShowPartyMenu(!showPartyMenu)}
             >
               <UsersThree size={16} />
+              <span className="party-label">Party:</span>
               <span className="party-name-text">{currentParty.name}</span>
-              <CaretDown size={14} />
+              <CaretDown size={14} className={`caret ${showPartyMenu ? 'open' : ''}`} />
             </button>
+
+            {/* Desktop dropdown menu - positioned relative to button */}
+            {showPartyMenu && (
+              <div className="party-menu" onClick={e => e.stopPropagation()}>
+                <div className="party-menu-header">
+                  <span>Current Party</span>
+                  <button
+                    className="copy-code-btn-small"
+                    onClick={handleCopyInviteCode}
+                    title="Copy invite code"
+                  >
+                    {copiedCode ? <Check size={14} /> : <Copy size={14} />}
+                    <span>{currentParty.invite_code}</span>
+                  </button>
+                </div>
+
+                {myParties.length > 1 && (
+                  <>
+                    <div className="party-menu-divider" />
+                    <div className="party-menu-label">Switch Party</div>
+                    {myParties
+                      .filter(p => p.id !== currentParty.id)
+                      .map(party => (
+                        <button
+                          key={party.id}
+                          className="party-menu-item"
+                          onClick={() => handleSwitchParty(party)}
+                        >
+                          {party.name}
+                          <span className="party-member-count">{party.member_count}</span>
+                        </button>
+                      ))}
+                  </>
+                )}
+
+                <div className="party-menu-divider" />
+                <button className="party-menu-item manage" onClick={handleLeaveParty}>
+                  <UsersThree size={16} />
+                  Manage Parties
+                </button>
+              </div>
+            )}
           </div>
+
+          {/* Desktop backdrop to close dropdown */}
+          {showPartyMenu && (
+            <div className="party-menu-backdrop" onClick={() => setShowPartyMenu(false)} />
+          )}
 
           <button className="sign-out-btn" onClick={handleSignOut}>Sign out</button>
         </div>
       </header>
 
-      {/* Party Menu (shared between desktop and mobile) */}
+      {/* Mobile Party Menu Overlay - centered modal */}
       {showPartyMenu && (
         <div className="party-menu-overlay" onClick={() => setShowPartyMenu(false)}>
-          <div className="party-menu" onClick={e => e.stopPropagation()}>
+          <div className="party-menu-modal" onClick={e => e.stopPropagation()}>
             <div className="party-menu-header">
               <span>Current Party</span>
               <button

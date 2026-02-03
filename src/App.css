@@ -188,10 +188,16 @@
   white-space: nowrap;
 }
 
+.header-teams {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
 .logo {
   display: flex;
   align-items: center;
   color: var(--seahawks-green);
+  flex-shrink: 0;
 }
 
 .header-center {
@@ -524,7 +530,7 @@
 }
 
 .leaderboard-panel {
-  margin: var(--space-lg) var(--space-lg) var(--space-xl);
+  margin: var(--space-xl) var(--space-lg) var(--space-xl);
   padding: var(--space-lg);
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -586,7 +592,7 @@
 .leaderboard-table .score {
   font-family: var(--font-mono);
   font-weight: 600;
-  color: var(--seahawks-green);
+  color: var(--text);
 }
 
 .leaderboard-table .total {
@@ -595,23 +601,23 @@
 }
 
 .leaderboard-table tr.rank-1 td {
-  background: rgba(255, 215, 0, 0.08);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .leaderboard-table tr.rank-2 td {
-  background: rgba(192, 192, 192, 0.06);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .leaderboard-table tr.rank-3 td {
-  background: rgba(205, 127, 50, 0.06);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .leaderboard-table tr.is-you td {
-  background: rgba(105, 190, 40, 0.12);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .leaderboard-table tr.is-you .player-id {
-  color: var(--seahawks-green);
+  color: var(--text);
   font-weight: 600;
 }
 
@@ -809,17 +815,61 @@
 
 /* Responsive */
 @media (max-width: 640px) {
+  /* Keep header as single inline row - NO WRAPPING */
   .header {
-    flex-direction: column;
-    gap: var(--space-md);
-    align-items: flex-start;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: var(--space-sm);
+    align-items: center;
+    padding: var(--space-xs) var(--space-sm);
+  }
+
+  .header-left {
+    gap: 4px;
+    min-width: 0;
+    flex-shrink: 1;
+  }
+
+  .header-left h1 {
+    font-size: 0.6875rem;
+  }
+
+  .header-teams {
+    font-size: 0.6875rem;
+  }
+
+  .logo {
+    display: flex;
+  }
+
+  .logo svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .header-center {
+    flex-shrink: 0;
+  }
+
+  .timer {
+    font-size: 0.625rem;
+    padding: 2px 5px;
+    gap: 2px;
+  }
+
+  .timer svg {
+    width: 10px;
+    height: 10px;
   }
 
   .header-right {
-    width: 100%;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: var(--space-sm);
+    flex-shrink: 0;
+    gap: var(--space-xs);
+  }
+
+  .sign-out-btn {
+    font-size: 0.625rem;
+    padding: 2px 6px;
   }
 
   .user-email {
@@ -850,19 +900,6 @@
     font-size: 1.75rem;
   }
 
-  .header-left h1 {
-    font-size: 0.875rem;
-  }
-
-  .header {
-    padding: var(--space-sm) var(--space-md);
-  }
-
-  .timer {
-    font-size: 0.6875rem;
-    padding: 3px 6px;
-  }
-
   .main {
     padding: var(--space-lg) var(--space-md);
   }
@@ -876,7 +913,7 @@
   }
 
   .leaderboard-panel {
-    margin: 0 var(--space-md) var(--space-lg);
+    margin: var(--space-xl) var(--space-md) var(--space-lg);
   }
 
   .leaderboard-table .email {
@@ -899,6 +936,19 @@
 
   .leaderboard-toggle,
   .party-switcher {
+    display: none;
+  }
+
+  /* Hide desktop backdrop, show mobile overlay */
+  .party-menu-backdrop {
+    display: none;
+  }
+
+  .party-menu-overlay {
+    display: flex;
+  }
+
+  .party-label {
     display: none;
   }
 }
@@ -1214,26 +1264,64 @@
   border-color: var(--text-muted);
 }
 
+.party-label {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
 .party-name-text {
   max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-weight: 500;
 }
 
-/* Party Menu Overlay */
+.party-switcher-btn .caret {
+  transition: transform var(--transition-fast);
+  color: var(--text-muted);
+}
+
+.party-switcher-btn .caret.open {
+  transform: rotate(180deg);
+}
+
+/* Desktop: Party Menu as dropdown attached to button */
+.party-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 280px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  z-index: 400;
+}
+
+/* Desktop: Invisible backdrop to close menu when clicking outside */
+.party-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  /* No background - just for click handling */
+}
+
+/* Mobile: Party Menu Overlay (centered modal) - hidden on desktop */
 .party-menu-overlay {
+  display: none; /* Hidden on desktop */
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
   z-index: 300;
-  display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  padding: 80px var(--space-md) var(--space-md);
+  padding: var(--space-md);
 }
 
-.party-menu {
+/* Mobile modal menu styling */
+.party-menu-modal {
   width: 100%;
   max-width: 320px;
   background: var(--bg-elevated);
