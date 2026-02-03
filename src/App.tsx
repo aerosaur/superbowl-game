@@ -34,8 +34,7 @@ import {
   CloudCheck,
   PencilSimple,
   CaretDown,
-  Copy,
-  ListChecks
+  Copy
 } from '@phosphor-icons/react'
 import './App.css'
 
@@ -457,6 +456,24 @@ function App() {
         </div>
       </header>
 
+      {/* Mobile Sub-Nav (sticky below header) */}
+      <nav className="mobile-subnav">
+        <button
+          className={`mobile-subnav-item ${showLeaderboard ? 'active' : ''}`}
+          onClick={() => setShowLeaderboard(!showLeaderboard)}
+        >
+          <ChartLine size={18} />
+          <span>Leaderboard</span>
+        </button>
+        <button
+          className="mobile-subnav-item"
+          onClick={() => setShowPartyMenu(!showPartyMenu)}
+        >
+          <UsersThree size={18} />
+          <span>{currentParty.name}</span>
+        </button>
+      </nav>
+
       {/* Score Hero Section */}
       <div className="score-hero">
         <div className="score-hero-left">
@@ -577,34 +594,6 @@ function App() {
       <footer className="footer">
         <p>Super Bowl LX Predictions</p>
       </footer>
-
-      {/* Mobile Bottom Nav */}
-      <nav className="mobile-nav">
-        <button
-          className={`mobile-nav-item ${!showLeaderboard ? 'active' : ''}`}
-          onClick={() => {
-            setShowLeaderboard(false)
-            window.scrollTo({ top: 0, behavior: 'smooth' })
-          }}
-        >
-          <ListChecks size={24} />
-          <span>Picks</span>
-        </button>
-        <button
-          className={`mobile-nav-item ${showLeaderboard ? 'active' : ''}`}
-          onClick={() => setShowLeaderboard(!showLeaderboard)}
-        >
-          <ChartLine size={24} />
-          <span>Leaderboard</span>
-        </button>
-        <button
-          className="mobile-nav-item"
-          onClick={() => setShowPartyMenu(!showPartyMenu)}
-        >
-          <UsersThree size={24} />
-          <span>{currentParty.name}</span>
-        </button>
-      </nav>
     </div>
   )
 }

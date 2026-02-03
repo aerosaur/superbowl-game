@@ -897,8 +897,8 @@
     padding: var(--space-sm) !important;
   }
 
-  /* Show mobile nav, hide desktop controls */
-  .mobile-nav {
+  /* Show mobile sub-nav, hide desktop controls */
+  .mobile-subnav {
     display: flex;
   }
 
@@ -906,52 +906,53 @@
   .party-switcher {
     display: none;
   }
-
-  /* Add padding for bottom nav */
-  .footer {
-    padding-bottom: 80px;
-  }
 }
 
 /* ============================= */
-/* MOBILE BOTTOM NAV */
+/* MOBILE SUB-NAV (sticky below header) */
 /* ============================= */
 
-.mobile-nav {
+.mobile-subnav {
   display: none; /* Hidden on desktop */
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: var(--bg-elevated);
-  border-top: 1px solid var(--border);
-  padding: var(--space-sm) var(--space-md);
-  padding-bottom: calc(var(--space-sm) + env(safe-area-inset-bottom));
-  z-index: 200;
-  justify-content: space-around;
-}
-
-.mobile-nav-item {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 4px;
+  justify-content: space-between;
+  gap: var(--space-sm);
   padding: var(--space-sm) var(--space-md);
-  color: var(--text-muted);
-  font-size: 0.6875rem;
-  font-weight: 500;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky;
+  top: 60px; /* Below header */
+  z-index: 90;
+}
+
+.mobile-subnav-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  transition: color var(--transition-fast);
-  min-width: 72px;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  flex: 1;
+  justify-content: center;
 }
 
-.mobile-nav-item:hover,
-.mobile-nav-item.active {
-  color: var(--seahawks-green);
+.mobile-subnav-item:hover,
+.mobile-subnav-item.active {
+  border-color: var(--seahawks-green);
+  color: var(--text);
 }
 
-.mobile-nav-item span {
-  max-width: 80px;
+.mobile-subnav-item.active {
+  background: var(--accent-dim);
+}
+
+.mobile-subnav-item span {
+  max-width: 100px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
