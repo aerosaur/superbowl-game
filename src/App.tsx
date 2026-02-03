@@ -35,7 +35,7 @@ import {
   PencilSimple,
   CaretDown,
   Copy,
-  SignOut
+  ListChecks
 } from '@phosphor-icons/react'
 import './App.css'
 
@@ -442,9 +442,9 @@ function App() {
                 )}
 
                 <div className="party-menu-divider" />
-                <button className="party-menu-item leave" onClick={handleLeaveParty}>
-                  <SignOut size={16} />
-                  Switch / Leave Party
+                <button className="party-menu-item manage" onClick={handleLeaveParty}>
+                  <UsersThree size={16} />
+                  Manage Parties
                 </button>
               </div>
             )}
@@ -577,6 +577,34 @@ function App() {
       <footer className="footer">
         <p>Super Bowl LX Predictions</p>
       </footer>
+
+      {/* Mobile Bottom Nav */}
+      <nav className="mobile-nav">
+        <button
+          className={`mobile-nav-item ${!showLeaderboard ? 'active' : ''}`}
+          onClick={() => {
+            setShowLeaderboard(false)
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+          }}
+        >
+          <ListChecks size={24} />
+          <span>Picks</span>
+        </button>
+        <button
+          className={`mobile-nav-item ${showLeaderboard ? 'active' : ''}`}
+          onClick={() => setShowLeaderboard(!showLeaderboard)}
+        >
+          <ChartLine size={24} />
+          <span>Leaderboard</span>
+        </button>
+        <button
+          className="mobile-nav-item"
+          onClick={() => setShowPartyMenu(!showPartyMenu)}
+        >
+          <UsersThree size={24} />
+          <span>{currentParty.name}</span>
+        </button>
+      </nav>
     </div>
   )
 }

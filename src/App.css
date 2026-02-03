@@ -896,6 +896,65 @@
   .party-switcher-btn {
     padding: var(--space-sm) !important;
   }
+
+  /* Show mobile nav, hide desktop controls */
+  .mobile-nav {
+    display: flex;
+  }
+
+  .leaderboard-toggle,
+  .party-switcher {
+    display: none;
+  }
+
+  /* Add padding for bottom nav */
+  .footer {
+    padding-bottom: 80px;
+  }
+}
+
+/* ============================= */
+/* MOBILE BOTTOM NAV */
+/* ============================= */
+
+.mobile-nav {
+  display: none; /* Hidden on desktop */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-elevated);
+  border-top: 1px solid var(--border);
+  padding: var(--space-sm) var(--space-md);
+  padding-bottom: calc(var(--space-sm) + env(safe-area-inset-bottom));
+  z-index: 200;
+  justify-content: space-around;
+}
+
+.mobile-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: var(--space-sm) var(--space-md);
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  transition: color var(--transition-fast);
+  min-width: 72px;
+}
+
+.mobile-nav-item:hover,
+.mobile-nav-item.active {
+  color: var(--seahawks-green);
+}
+
+.mobile-nav-item span {
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ============================= */
@@ -1293,13 +1352,13 @@
   background: var(--bg-card);
 }
 
-.party-menu-item.leave {
+.party-menu-item.manage {
   color: var(--text-secondary);
   gap: var(--space-sm);
   justify-content: flex-start;
 }
 
-.party-menu-item.leave:hover {
+.party-menu-item.manage:hover {
   color: var(--text);
 }
 
