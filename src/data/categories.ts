@@ -78,9 +78,10 @@ export const categories: Category[] = [
     options: [
       { id: 'sam-darnold', label: 'Sam Darnold', sublabel: 'SEA · QB' },
       { id: 'drake-maye', label: 'Drake Maye', sublabel: 'NE · QB' },
-      { id: 'dk-metcalf', label: 'DK Metcalf', sublabel: 'SEA · WR' },
+      { id: 'cooper-kupp', label: 'Cooper Kupp', sublabel: 'SEA · WR' },
       { id: 'jaxon-smith-njigba', label: 'Jaxon Smith-Njigba', sublabel: 'SEA · WR' },
       { id: 'kenneth-walker', label: 'Kenneth Walker III', sublabel: 'SEA · RB' },
+      { id: 'stefon-diggs', label: 'Stefon Diggs', sublabel: 'NE · WR' },
       { id: 'rhamondre-stevenson', label: 'Rhamondre Stevenson', sublabel: 'NE · RB' },
       { id: 'hunter-henry', label: 'Hunter Henry', sublabel: 'NE · TE' },
       { id: 'defensive-player', label: 'Defensive Player', sublabel: 'Any team' },
@@ -92,16 +93,18 @@ export const categories: Category[] = [
     icon: 'PersonSimpleRun',
     type: 'player',
     options: [
-      { id: 'dk-metcalf', label: 'DK Metcalf', sublabel: 'SEA · WR' },
+      { id: 'cooper-kupp', label: 'Cooper Kupp', sublabel: 'SEA · WR' },
       { id: 'jaxon-smith-njigba', label: 'Jaxon Smith-Njigba', sublabel: 'SEA · WR' },
       { id: 'kenneth-walker', label: 'Kenneth Walker III', sublabel: 'SEA · RB' },
-      { id: 'tyler-lockett', label: 'Tyler Lockett', sublabel: 'SEA · WR' },
-      { id: 'noah-fant', label: 'Noah Fant', sublabel: 'SEA · TE' },
+      { id: 'rashid-shaheed', label: 'Rashid Shaheed', sublabel: 'SEA · WR' },
+      { id: 'george-holani', label: 'George Holani', sublabel: 'SEA · RB' },
+      { id: 'aj-barner', label: 'AJ Barner', sublabel: 'SEA · TE' },
+      { id: 'stefon-diggs', label: 'Stefon Diggs', sublabel: 'NE · WR' },
       { id: 'rhamondre-stevenson', label: 'Rhamondre Stevenson', sublabel: 'NE · RB' },
+      { id: 'treveyon-henderson', label: 'TreVeyon Henderson', sublabel: 'NE · RB' },
       { id: 'hunter-henry', label: 'Hunter Henry', sublabel: 'NE · TE' },
       { id: 'demario-douglas', label: 'DeMario Douglas', sublabel: 'NE · WR' },
       { id: 'kayshon-boutte', label: 'Kayshon Boutte', sublabel: 'NE · WR' },
-      { id: 'antonio-gibson', label: 'Antonio Gibson', sublabel: 'NE · RB' },
       { id: 'other', label: 'Other / Defense / ST', sublabel: 'Anyone else' },
     ]
   },
@@ -122,9 +125,9 @@ export const categories: Category[] = [
     type: 'player',
     options: [
       { id: 'kenneth-walker', label: 'Kenneth Walker III', sublabel: 'SEA · RB' },
-      { id: 'zach-charbonnet', label: 'Zach Charbonnet', sublabel: 'SEA · RB' },
+      { id: 'george-holani', label: 'George Holani', sublabel: 'SEA · RB' },
       { id: 'rhamondre-stevenson', label: 'Rhamondre Stevenson', sublabel: 'NE · RB' },
-      { id: 'antonio-gibson', label: 'Antonio Gibson', sublabel: 'NE · RB' },
+      { id: 'treveyon-henderson', label: 'TreVeyon Henderson', sublabel: 'NE · RB' },
     ]
   },
   {
@@ -133,12 +136,15 @@ export const categories: Category[] = [
     icon: 'HandGrabbing',
     type: 'player',
     options: [
-      { id: 'dk-metcalf', label: 'DK Metcalf', sublabel: 'SEA · WR' },
+      { id: 'cooper-kupp', label: 'Cooper Kupp', sublabel: 'SEA · WR' },
       { id: 'jaxon-smith-njigba', label: 'Jaxon Smith-Njigba', sublabel: 'SEA · WR' },
-      { id: 'tyler-lockett', label: 'Tyler Lockett', sublabel: 'SEA · WR' },
-      { id: 'noah-fant', label: 'Noah Fant', sublabel: 'SEA · TE' },
-      { id: 'hunter-henry', label: 'Hunter Henry', sublabel: 'NE · TE' },
+      { id: 'rashid-shaheed', label: 'Rashid Shaheed', sublabel: 'SEA · WR' },
+      { id: 'aj-barner', label: 'AJ Barner', sublabel: 'SEA · TE' },
+      { id: 'stefon-diggs', label: 'Stefon Diggs', sublabel: 'NE · WR' },
       { id: 'demario-douglas', label: 'DeMario Douglas', sublabel: 'NE · WR' },
+      { id: 'kayshon-boutte', label: 'Kayshon Boutte', sublabel: 'NE · WR' },
+      { id: 'hunter-henry', label: 'Hunter Henry', sublabel: 'NE · TE' },
+      { id: 'austin-hooper', label: 'Austin Hooper', sublabel: 'NE · TE' },
     ]
   },
 
