@@ -776,7 +776,7 @@
   background: var(--bg-card);
   border-bottom: 1px solid var(--border-subtle);
   position: sticky;
-  top: 60px; /* Below header */
+  top: 0; /* Will be overridden in mobile media query */
   z-index: 90;
 }
 
@@ -822,6 +822,7 @@
     gap: var(--space-sm);
     align-items: center;
     padding: var(--space-xs) var(--space-sm);
+    height: 36px; /* Fixed height for consistent subnav positioning */
   }
 
   .header-left {
@@ -932,6 +933,8 @@
   /* Show mobile sub-nav, hide desktop controls */
   .mobile-subnav {
     display: flex;
+    top: 36px; /* Directly below mobile header (matches header height: 36px) */
+    margin-top: 0;
   }
 
   .leaderboard-toggle,
@@ -939,13 +942,9 @@
     display: none;
   }
 
-  /* Hide desktop backdrop, show mobile overlay */
+  /* Hide desktop backdrop */
   .party-menu-backdrop {
     display: none;
-  }
-
-  .party-menu-overlay {
-    display: flex;
   }
 
   .party-label {
@@ -1318,6 +1317,13 @@
   align-items: center;
   justify-content: center;
   padding: var(--space-md);
+}
+
+/* Show overlay on mobile */
+@media (max-width: 640px) {
+  .party-menu-overlay {
+    display: flex;
+  }
 }
 
 /* Mobile modal menu styling */

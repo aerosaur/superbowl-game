@@ -516,7 +516,7 @@ function App() {
           onClick={() => setShowPartyMenu(!showPartyMenu)}
         >
           <UsersThree size={18} />
-          <span>{currentParty.name}</span>
+          <span>Party: {currentParty.name}</span>
         </button>
       </nav>
 
