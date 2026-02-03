@@ -76,7 +76,7 @@ export const categories: Category[] = [
     icon: 'Star',
     type: 'player',
     options: [
-      { id: 'geno-smith', label: 'Geno Smith', sublabel: 'SEA · QB' },
+      { id: 'sam-darnold', label: 'Sam Darnold', sublabel: 'SEA · QB' },
       { id: 'drake-maye', label: 'Drake Maye', sublabel: 'NE · QB' },
       { id: 'dk-metcalf', label: 'DK Metcalf', sublabel: 'SEA · WR' },
       { id: 'jaxon-smith-njigba', label: 'Jaxon Smith-Njigba', sublabel: 'SEA · WR' },
@@ -111,7 +111,7 @@ export const categories: Category[] = [
     icon: 'Football',
     type: 'player',
     options: [
-      { id: 'geno-smith', label: 'Geno Smith', sublabel: 'SEA · QB' },
+      { id: 'sam-darnold', label: 'Sam Darnold', sublabel: 'SEA · QB' },
       { id: 'drake-maye', label: 'Drake Maye', sublabel: 'NE · QB' },
     ]
   },
