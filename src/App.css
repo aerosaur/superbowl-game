@@ -449,9 +449,22 @@
   background: rgba(52, 199, 89, 0.18);
 }
 
-/* Team-colored options */
+/* Team-colored options with gradient borders */
 .option-btn.seahawks {
-  border-left: 3px solid var(--seahawks-green);
+  border-left: none;
+  position: relative;
+  padding-left: calc(var(--space-md) + 3px);
+}
+
+.option-btn.seahawks::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--seahawks-navy), var(--seahawks-green));
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
 }
 
 .option-btn.seahawks.selected {
@@ -460,7 +473,20 @@
 }
 
 .option-btn.patriots {
-  border-left: 3px solid var(--patriots-red);
+  border-left: none;
+  position: relative;
+  padding-left: calc(var(--space-md) + 3px);
+}
+
+.option-btn.patriots::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--patriots-navy), var(--patriots-red));
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
 }
 
 .option-btn.patriots.selected {
