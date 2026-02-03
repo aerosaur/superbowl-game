@@ -31,7 +31,6 @@ import {
   FilmSlate,
   Robot,
   ChartLine,
-  CloudCheck,
   PencilSimple,
   CaretDown,
   Copy
@@ -378,16 +377,15 @@ function App() {
           <span className="logo">
             <Football size={24} weight="fill" />
           </span>
-          <div className="header-title">
-            <h1>Super Bowl LX</h1>
-            <span className="matchup-small">SEA vs NE · Feb 8</span>
-          </div>
+          <h1>Super Bowl LX</h1>
         </div>
-        <div className="header-right">
+        <div className="header-center">
           <div className="timer" data-locked={isLocked}>
             {isLocked ? <Lock size={14} /> : <Clock size={14} />}
             {timeLeft}
           </div>
+        </div>
+        <div className="header-right">
           <button
             className={`leaderboard-toggle ${showLeaderboard ? 'active' : ''}`}
             onClick={() => setShowLeaderboard(!showLeaderboard)}
@@ -406,55 +404,55 @@ function App() {
               <span className="party-name-text">{currentParty.name}</span>
               <CaretDown size={14} />
             </button>
-
-            {showPartyMenu && (
-              <div className="party-menu">
-                <div className="party-menu-header">
-                  <span>Current Party</span>
-                  <button
-                    className="copy-code-btn-small"
-                    onClick={handleCopyInviteCode}
-                    title="Copy invite code"
-                  >
-                    {copiedCode ? <Check size={14} /> : <Copy size={14} />}
-                    <span>{currentParty.invite_code}</span>
-                  </button>
-                </div>
-
-                {myParties.length > 1 && (
-                  <>
-                    <div className="party-menu-divider" />
-                    <div className="party-menu-label">Switch Party</div>
-                    {myParties
-                      .filter(p => p.id !== currentParty.id)
-                      .map(party => (
-                        <button
-                          key={party.id}
-                          className="party-menu-item"
-                          onClick={() => handleSwitchParty(party)}
-                        >
-                          {party.name}
-                          <span className="party-member-count">{party.member_count}</span>
-                        </button>
-                      ))}
-                  </>
-                )}
-
-                <div className="party-menu-divider" />
-                <button className="party-menu-item manage" onClick={handleLeaveParty}>
-                  <UsersThree size={16} />
-                  Manage Parties
-                </button>
-              </div>
-            )}
           </div>
 
-          <div className="user-menu">
-            <span className="user-email">{user.email}</span>
-            <button className="sign-out-btn" onClick={handleSignOut}>Sign out</button>
-          </div>
+          <button className="sign-out-btn" onClick={handleSignOut}>Sign out</button>
         </div>
       </header>
+
+      {/* Party Menu (shared between desktop and mobile) */}
+      {showPartyMenu && (
+        <div className="party-menu-overlay" onClick={() => setShowPartyMenu(false)}>
+          <div className="party-menu" onClick={e => e.stopPropagation()}>
+            <div className="party-menu-header">
+              <span>Current Party</span>
+              <button
+                className="copy-code-btn-small"
+                onClick={handleCopyInviteCode}
+                title="Copy invite code"
+              >
+                {copiedCode ? <Check size={14} /> : <Copy size={14} />}
+                <span>{currentParty.invite_code}</span>
+              </button>
+            </div>
+
+            {myParties.length > 1 && (
+              <>
+                <div className="party-menu-divider" />
+                <div className="party-menu-label">Switch Party</div>
+                {myParties
+                  .filter(p => p.id !== currentParty.id)
+                  .map(party => (
+                    <button
+                      key={party.id}
+                      className="party-menu-item"
+                      onClick={() => handleSwitchParty(party)}
+                    >
+                      {party.name}
+                      <span className="party-member-count">{party.member_count}</span>
+                    </button>
+                  ))}
+              </>
+            )}
+
+            <div className="party-menu-divider" />
+            <button className="party-menu-item manage" onClick={handleLeaveParty}>
+              <UsersThree size={16} />
+              Manage Parties
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Mobile Sub-Nav (sticky below header) */}
       <nav className="mobile-subnav">
@@ -474,10 +472,10 @@ function App() {
         </button>
       </nav>
 
-      {/* Score Hero Section */}
-      <div className="score-hero">
-        <div className="score-hero-left">
-          <div className="score-hero-name">
+      {/* Score Bar */}
+      <div className="score-bar">
+        <div className="score-bar-left">
+          <div className="score-bar-name">
             {isEditingName ? (
               <div className="edit-name-form">
                 <input
@@ -508,27 +506,26 @@ function App() {
               </>
             )}
           </div>
-          <div className="score-hero-value">
-            <span className="score-big">{score}</span>
-            <span className="score-total">/ {totalResults > 0 ? totalResults : categories.length}</span>
-          </div>
-          {totalResults > 0 && currentUserRank > 0 && (
-            <span className="score-rank">Rank #{currentUserRank} of {leaderboard.length}</span>
-          )}
         </div>
-        <div className="score-hero-right">
+        <div className="score-bar-stats">
+          <div className="score-stat">
+            <span className="score-stat-value">{score}</span>
+            <span className="score-stat-label">Score</span>
+          </div>
           <div className="score-stat">
             <span className="score-stat-value">{totalPredictions}</span>
-            <span className="score-stat-label">Picks Made</span>
+            <span className="score-stat-label">Picks</span>
           </div>
           <div className="score-stat">
             <span className="score-stat-value">{categories.length - totalPredictions}</span>
-            <span className="score-stat-label">Remaining</span>
+            <span className="score-stat-label">Left</span>
           </div>
-          <div className="saved-indicator">
-            <CloudCheck size={16} />
-            <span>Auto-saved</span>
-          </div>
+          {totalResults > 0 && currentUserRank > 0 && (
+            <div className="score-stat rank">
+              <span className="score-stat-value">#{currentUserRank}</span>
+              <span className="score-stat-label">Rank</span>
+            </div>
+          )}
         </div>
       </div>
 
