@@ -813,6 +813,56 @@
   font-size: 0.8125rem;
 }
 
+/* ============================= */
+/* MOBILE SUB-NAV (sticky below header) */
+/* ============================= */
+
+.mobile-subnav {
+  display: none; /* Hidden on desktop, shown in media query */
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky;
+  top: 60px; /* Below header */
+  z-index: 90;
+}
+
+.mobile-subnav-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  flex: 1;
+  justify-content: center;
+}
+
+.mobile-subnav-item:hover,
+.mobile-subnav-item.active {
+  border-color: var(--seahawks-green);
+  color: var(--text);
+}
+
+.mobile-subnav-item.active {
+  background: var(--accent-dim);
+}
+
+.mobile-subnav-item span {
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .header {
@@ -906,56 +956,6 @@
   .party-switcher {
     display: none;
   }
-}
-
-/* ============================= */
-/* MOBILE SUB-NAV (sticky below header) */
-/* ============================= */
-
-.mobile-subnav {
-  display: none; /* Hidden on desktop */
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--border-subtle);
-  position: sticky;
-  top: 60px; /* Below header */
-  z-index: 90;
-}
-
-.mobile-subnav-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 14px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  color: var(--text-secondary);
-  font-size: 0.8125rem;
-  font-weight: 500;
-  transition: all var(--transition-fast);
-  flex: 1;
-  justify-content: center;
-}
-
-.mobile-subnav-item:hover,
-.mobile-subnav-item.active {
-  border-color: var(--seahawks-green);
-  color: var(--text);
-}
-
-.mobile-subnav-item.active {
-  background: var(--accent-dim);
-}
-
-.mobile-subnav-item span {
-  max-width: 100px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 /* ============================= */
