@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase, savePrediction, deletePrediction, getPredictions, getResults, subscribeToResults, getLeaderboard, saveProfile, getCurrentUserFirstName, updateDisplayName, getMyProfile, type LeaderboardEntry } from './lib/supabase'
+import { supabase, savePrediction, deletePrediction, getPredictions, getResults, subscribeToResults, getPartyLeaderboard, saveProfile, getCurrentUserFirstName, updateDisplayName, getMyProfile, getMyParties, type LeaderboardEntry, type Party } from './lib/supabase'
 import { categories, categoryGroups, type Category, type Option } from './data/categories'
+import { PartySelector } from './PartySelector'
 import type { User } from '@supabase/supabase-js'
 import {
   Trophy,
@@ -31,7 +32,10 @@ import {
   Robot,
   ChartLine,
   CloudCheck,
-  PencilSimple
+  PencilSimple,
+  CaretDown,
+  Copy,
+  SignOut
 } from '@phosphor-icons/react'
 import './App.css'
 
@@ -78,6 +82,12 @@ function App() {
   const [editNameValue, setEditNameValue] = useState('')
   const [savingName, setSavingName] = useState(false)
 
+  // Party state
+  const [currentParty, setCurrentParty] = useState<Party | null>(null)
+  const [myParties, setMyParties] = useState<(Party & { member_count: number })[]>([])
+  const [showPartyMenu, setShowPartyMenu] = useState(false)
+  const [copiedCode, setCopiedCode] = useState(false)
+
   // Auth state
   useEffect(() => {
     const loadUserProfile = async (user: User) => {
@@ -95,10 +105,24 @@ function App() {
       }
     }
 
+    const loadUserParties = async () => {
+      try {
+        const parties = await getMyParties()
+        setMyParties(parties)
+        // Auto-select first party if user only has one
+        if (parties.length === 1) {
+          setCurrentParty(parties[0])
+        }
+      } catch (error) {
+        console.error('Failed to load parties:', error)
+      }
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
       if (session?.user) {
         loadUserProfile(session.user)
+        loadUserParties()
       }
       setLoading(false)
     }).catch((error) => {
@@ -110,6 +134,10 @@ function App() {
       setUser(session?.user ?? null)
       if (session?.user) {
         loadUserProfile(session.user)
+        loadUserParties()
+      } else {
+        setCurrentParty(null)
+        setMyParties([])
       }
     })
 
@@ -148,10 +176,12 @@ function App() {
 
   // Load leaderboard when results change or when opened
   useEffect(() => {
-    if (showLeaderboard && user) {
-      getLeaderboard(results).then(setLeaderboard).catch(console.error)
+    if (showLeaderboard && user && currentParty) {
+      getPartyLeaderboard(currentParty.id, results).then(setLeaderboard).catch(console.error)
+    } else if (!currentParty) {
+      setLeaderboard([])
     }
-  }, [showLeaderboard, results, user])
+  }, [showLeaderboard, results, user, currentParty])
 
   // Countdown timer
   useEffect(() => {
@@ -264,6 +294,32 @@ function App() {
     setEditNameValue('')
   }
 
+  const handleSelectParty = async (party: Party) => {
+    setCurrentParty(party)
+    // Refresh parties list to get updated member counts
+    const parties = await getMyParties()
+    setMyParties(parties)
+  }
+
+  const handleSwitchParty = (party: Party) => {
+    setCurrentParty(party)
+    setShowPartyMenu(false)
+    setShowLeaderboard(false) // Reset leaderboard view
+  }
+
+  const handleLeaveParty = () => {
+    setCurrentParty(null)
+    setShowPartyMenu(false)
+  }
+
+  const handleCopyInviteCode = async () => {
+    if (currentParty) {
+      await navigator.clipboard.writeText(currentParty.invite_code)
+      setCopiedCode(true)
+      setTimeout(() => setCopiedCode(false), 2000)
+    }
+  }
+
   if (loading) {
     return (
       <div className="app">
@@ -307,6 +363,15 @@ function App() {
     )
   }
 
+  // Show party selector if no party is selected
+  if (!currentParty) {
+    return (
+      <div className="app">
+        <PartySelector onSelectParty={handleSelectParty} onSignOut={handleSignOut} />
+      </div>
+    )
+  }
+
   return (
     <div className="app">
       <header className="header">
@@ -331,6 +396,60 @@ function App() {
             <ChartLine size={16} />
             <span className="leaderboard-toggle-text">Leaderboard</span>
           </button>
+
+          {/* Party Switcher */}
+          <div className="party-switcher">
+            <button
+              className="party-switcher-btn"
+              onClick={() => setShowPartyMenu(!showPartyMenu)}
+            >
+              <UsersThree size={16} />
+              <span className="party-name-text">{currentParty.name}</span>
+              <CaretDown size={14} />
+            </button>
+
+            {showPartyMenu && (
+              <div className="party-menu">
+                <div className="party-menu-header">
+                  <span>Current Party</span>
+                  <button
+                    className="copy-code-btn-small"
+                    onClick={handleCopyInviteCode}
+                    title="Copy invite code"
+                  >
+                    {copiedCode ? <Check size={14} /> : <Copy size={14} />}
+                    <span>{currentParty.invite_code}</span>
+                  </button>
+                </div>
+
+                {myParties.length > 1 && (
+                  <>
+                    <div className="party-menu-divider" />
+                    <div className="party-menu-label">Switch Party</div>
+                    {myParties
+                      .filter(p => p.id !== currentParty.id)
+                      .map(party => (
+                        <button
+                          key={party.id}
+                          className="party-menu-item"
+                          onClick={() => handleSwitchParty(party)}
+                        >
+                          {party.name}
+                          <span className="party-member-count">{party.member_count}</span>
+                        </button>
+                      ))}
+                  </>
+                )}
+
+                <div className="party-menu-divider" />
+                <button className="party-menu-item leave" onClick={handleLeaveParty}>
+                  <SignOut size={16} />
+                  Switch / Leave Party
+                </button>
+              </div>
+            )}
+          </div>
+
           <div className="user-menu">
             <span className="user-email">{user.email}</span>
             <button className="sign-out-btn" onClick={handleSignOut}>Sign out</button>

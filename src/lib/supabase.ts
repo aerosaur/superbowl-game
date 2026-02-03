@@ -9,6 +9,24 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+// ============================================
+// TYPES
+// ============================================
+
+export type Party = {
+  id: string
+  name: string
+  invite_code: string
+  created_by: string
+  created_at: string
+}
+
+export type PartyMember = {
+  party_id: string
+  user_id: string
+  joined_at: string
+}
+
 export type Prediction = {
   id: string
   user_id: string
@@ -287,4 +305,229 @@ export async function getMyProfile(userId?: string): Promise<string | null> {
   } catch {
     return null
   }
+}
+
+// ============================================
+// PARTY FUNCTIONS
+// ============================================
+
+function generateInviteCode(): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+  let code = ''
+  for (let i = 0; i < 6; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return code
+}
+
+export async function createParty(name: string): Promise<Party> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  // Generate unique invite code (retry if collision)
+  let inviteCode = generateInviteCode()
+  let attempts = 0
+
+  while (attempts < 5) {
+    const { data, error } = await supabase
+      .from('sb_parties')
+      .insert({
+        name,
+        invite_code: inviteCode,
+        created_by: user.id
+      })
+      .select()
+      .single()
+
+    if (error?.code === '23505') {
+      // Unique violation - try a new code
+      inviteCode = generateInviteCode()
+      attempts++
+      continue
+    }
+
+    if (error) throw error
+
+    // Auto-join the party as creator
+    await supabase
+      .from('sb_party_members')
+      .insert({
+        party_id: data.id,
+        user_id: user.id
+      })
+
+    return data
+  }
+
+  throw new Error('Failed to generate unique invite code')
+}
+
+export async function joinParty(inviteCode: string): Promise<Party> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  // Find party by invite code
+  const { data: party, error: findError } = await supabase
+    .from('sb_parties')
+    .select('*')
+    .eq('invite_code', inviteCode.toUpperCase())
+    .single()
+
+  if (findError || !party) {
+    throw new Error('Invalid invite code')
+  }
+
+  // Check if already a member
+  const { data: existing } = await supabase
+    .from('sb_party_members')
+    .select('party_id')
+    .eq('party_id', party.id)
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (existing) {
+    return party // Already a member
+  }
+
+  // Join the party
+  const { error: joinError } = await supabase
+    .from('sb_party_members')
+    .insert({
+      party_id: party.id,
+      user_id: user.id
+    })
+
+  if (joinError) throw joinError
+
+  return party
+}
+
+export async function leaveParty(partyId: string): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { error } = await supabase
+    .from('sb_party_members')
+    .delete()
+    .eq('party_id', partyId)
+    .eq('user_id', user.id)
+
+  if (error) throw error
+}
+
+export async function getMyParties(): Promise<(Party & { member_count: number })[]> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return []
+
+  // Get parties user is a member of
+  const { data: memberships, error: memberError } = await supabase
+    .from('sb_party_members')
+    .select('party_id')
+    .eq('user_id', user.id)
+
+  if (memberError) throw memberError
+  if (!memberships || memberships.length === 0) return []
+
+  const partyIds = memberships.map(m => m.party_id)
+
+  // Get party details
+  const { data: parties, error: partyError } = await supabase
+    .from('sb_parties')
+    .select('*')
+    .in('id', partyIds)
+
+  if (partyError) throw partyError
+  if (!parties) return []
+
+  // Get member counts
+  const { data: counts, error: countError } = await supabase
+    .from('sb_party_members')
+    .select('party_id')
+    .in('party_id', partyIds)
+
+  if (countError) throw countError
+
+  const countMap = new Map<string, number>()
+  for (const c of counts || []) {
+    countMap.set(c.party_id, (countMap.get(c.party_id) || 0) + 1)
+  }
+
+  return parties.map(p => ({
+    ...p,
+    member_count: countMap.get(p.id) || 0
+  }))
+}
+
+export async function getPartyLeaderboard(partyId: string, resultsMap: Map<string, string>): Promise<LeaderboardEntry[]> {
+  // Get party members
+  const { data: members, error: memberError } = await supabase
+    .from('sb_party_members')
+    .select('user_id')
+    .eq('party_id', partyId)
+
+  if (memberError) throw memberError
+  if (!members || members.length === 0) return []
+
+  const memberIds = members.map(m => m.user_id)
+
+  // Get predictions for party members only
+  const { data: predictions, error: predError } = await supabase
+    .from('sb_predictions')
+    .select('user_id, category, selection')
+    .in('user_id', memberIds)
+    .order('user_id')
+
+  if (predError) throw predError
+  if (!predictions) return []
+
+  // Get profiles
+  const { data: profiles, error: profileError } = await supabase
+    .from('sb_profiles')
+    .select('user_id, first_name')
+    .in('user_id', memberIds)
+
+  if (profileError) console.error('Failed to load profiles:', profileError)
+
+  const profileMap = new Map<string, string>()
+  for (const profile of profiles || []) {
+    profileMap.set(profile.user_id, profile.first_name)
+  }
+
+  // Calculate scores
+  const scores = new Map<string, LeaderboardEntry>()
+
+  // Initialize all members (even those without predictions)
+  for (const userId of memberIds) {
+    scores.set(userId, {
+      user_id: userId,
+      first_name: profileMap.get(userId) || 'Player',
+      score: 0,
+      total: 0
+    })
+  }
+
+  // Count predictions and scores
+  for (const row of predictions) {
+    const userScore = scores.get(row.user_id)!
+    userScore.total++
+
+    const result = resultsMap.get(row.category)
+    if (result && row.selection === result) {
+      userScore.score++
+    }
+  }
+
+  return Array.from(scores.values())
+    .sort((a, b) => b.score - a.score || b.total - a.total)
+}
+
+export async function getPartyByInviteCode(inviteCode: string): Promise<Party | null> {
+  const { data, error } = await supabase
+    .from('sb_parties')
+    .select('*')
+    .eq('invite_code', inviteCode.toUpperCase())
+    .maybeSingle()
+
+  if (error) return null
+  return data
 }
