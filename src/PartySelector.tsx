@@ -68,9 +68,10 @@ export function PartySelector({ onSelectParty, onSignOut }: Props) {
     }
   }
 
-  const handleCopyCode = async (code: string) => {
-    await navigator.clipboard.writeText(code)
-    setCopiedCode(code)
+  const handleCopyCode = async (party: PartyWithCount) => {
+    const message = `🏈 Join my Super Bowl party "${party.name}"!\n\nCode: ${party.invite_code}\n\nhttps://superbowl-game-one.vercel.app`
+    await navigator.clipboard.writeText(message)
+    setCopiedCode(party.invite_code)
     setTimeout(() => setCopiedCode(null), 2000)
   }
 
@@ -110,8 +111,8 @@ export function PartySelector({ onSelectParty, onSignOut }: Props) {
                     <div className="party-card-actions">
                       <button
                         className="copy-code-btn"
-                        onClick={() => handleCopyCode(party.invite_code)}
-                        title="Copy invite code"
+                        onClick={() => handleCopyCode(party)}
+                        title="Copy invite message"
                       >
                         {copiedCode === party.invite_code ? (
                           <Check size={16} />
