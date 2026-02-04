@@ -312,7 +312,8 @@ function App() {
 
   const handleCopyInviteCode = async () => {
     if (currentParty) {
-      await navigator.clipboard.writeText(currentParty.invite_code)
+      const message = `🏈 Join my Super Bowl party "${currentParty.name}"!\n\nCode: ${currentParty.invite_code}\n\nhttps://superbowl-game-one.vercel.app`
+      await navigator.clipboard.writeText(message)
       setCopiedCode(true)
       setTimeout(() => setCopiedCode(false), 2000)
     }
@@ -414,7 +415,7 @@ function App() {
                   <button
                     className="copy-code-btn-small"
                     onClick={handleCopyInviteCode}
-                    title="Copy invite code"
+                    title="Copy invite message"
                   >
                     {copiedCode ? <Check size={14} /> : <Copy size={14} />}
                     <span>{currentParty.invite_code}</span>
@@ -467,7 +468,7 @@ function App() {
               <button
                 className="copy-code-btn-small"
                 onClick={handleCopyInviteCode}
-                title="Copy invite code"
+                title="Copy invite message"
               >
                 {copiedCode ? <Check size={14} /> : <Copy size={14} />}
                 <span>{currentParty.invite_code}</span>
