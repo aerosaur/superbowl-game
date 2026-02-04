@@ -182,7 +182,7 @@ export function PartySelector({ onSelectParty, onSignOut }: Props) {
       {mode === 'join' && (
         <form className="party-form" onSubmit={handleJoin}>
           <h2>Join a Party</h2>
-          <p>Enter the 6-character invite code from your party host.</p>
+          <p>Enter the invite code from your party host.</p>
 
           <input
             type="text"
@@ -190,7 +190,7 @@ export function PartySelector({ onSelectParty, onSignOut }: Props) {
             value={inviteCode}
             onChange={e => setInviteCode(e.target.value.toUpperCase())}
             autoFocus
-            maxLength={6}
+            maxLength={10}
             className="invite-code-input"
           />
 
@@ -200,7 +200,7 @@ export function PartySelector({ onSelectParty, onSignOut }: Props) {
             <button type="button" className="cancel-btn" onClick={() => { setMode('list'); setError(''); }}>
               Cancel
             </button>
-            <button type="submit" className="submit-btn" disabled={submitting || inviteCode.length !== 6}>
+            <button type="submit" className="submit-btn" disabled={submitting || inviteCode.length < 5}>
               {submitting ? 'Joining...' : 'Join Party'}
             </button>
           </div>
